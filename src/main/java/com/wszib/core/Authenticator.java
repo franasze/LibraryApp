@@ -5,7 +5,7 @@ import com.wszib.model.User;
 
 public class Authenticator {
 
-    UserDAO userDB = UserDAO.getInstance();
+    private final UserDAO userDB = UserDAO.getInstance();
     private static final Authenticator instance = new Authenticator();
     public User loggedUser = null;
     public final String seed = "12312312312312asdqw1@r";

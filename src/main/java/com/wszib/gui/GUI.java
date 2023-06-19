@@ -10,9 +10,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 import java.util.Scanner;
 
 public class GUI {
-    public static BookDAO bookDB = BookDAO.getInstance();
+    private static final BookDAO bookDB = BookDAO.getInstance();
     static final UserDAO userDB = UserDAO.getInstance();
-    private static final GUI instance = new GUI();
     final static Authenticator authenticator = Authenticator.getInstance();
     private static final Scanner scanner = new Scanner(System.in);
     private GUI() {
@@ -84,24 +83,15 @@ public class GUI {
     }
     public static void showBooksList() {
         System.out.println("Title\t\t\t\t\t\t\t\tAuthor\t\t\t\t\t\t\t\tISBN\t\t  Borrowed");
-        bookDB.getBooks().stream().forEach(System.out::println);
+        bookDB.getBooks().forEach(System.out::println);
         System.out.println("\n");
     }
 
 
-//    public static void showBorrowedBooksList() {
-//        System.out.println("Title\t\t\t\t\t\t\t\tAuthor\t\t\t\t\t\t\t\tISBN\t\t  Borrowed");
-//        bookDB.getBooks().stream().filter(b->b.getStatus().equals(Book.Status.BORROWED))
-//                .forEach(System.out::println);
-//    }
     public static void showBorrowedBooksList2() {
         bookDB.listBorrowedBooks();
     }
-//    public static void showBorrowedBooksAfterTheDeadlineList() {
-//        System.out.println("Title\t\t\t\t\t\t\t\tAuthor\t\t\t\t\t\t\t\tISBN\t\t  Borrowed");
-//        bookDB.getBooks().stream().filter(b->b.getStatus().equals(Book.Status.BORROWED))
-//                .forEach(System.out::println);
-//    }
+
     public static void showBorrowedBooksAfterTheDeadlineList2() {
         bookDB.listBorrowedBooksAfterTheDeadline();
     }
@@ -123,7 +113,7 @@ public class GUI {
 
 
     public static String readTitle(){
-        System.out.println("Podaj tytuł: ");
+        System.out.println("Enter title: ");
         return scanner.nextLine();
     }
 
@@ -136,9 +126,4 @@ public class GUI {
         int ISBN = Integer.parseInt(scanner.nextLine());
         return new Book(ISBN,author,title, Book.Status.AVAILABLE);
     }
-
-    public static GUI getInstance() {
-        return instance;
-    }
-
 }

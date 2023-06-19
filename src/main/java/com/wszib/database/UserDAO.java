@@ -51,10 +51,7 @@ public class UserDAO {
     }
 
     public boolean ifUserExist(String login){
-            if(findByLogin(login) != null) {
-                    return true;
-            }
-        return false;
+        return findByLogin(login) != null;
 
     }
     public List<User> getUsers() { //sql -> java
@@ -73,7 +70,7 @@ public class UserDAO {
 
                 User user = new User(login,password,role,firstName,lastName);
                 users.add(user);
-                System.out.println(user.toString());
+                System.out.println(user);
 
             }
         } catch (SQLException e) {

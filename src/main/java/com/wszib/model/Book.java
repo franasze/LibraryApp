@@ -13,41 +13,23 @@ public class Book {
         this.status = status;
     }
 
-    public Book(){
-
-    }
-
     public String getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
-    }
 
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
 
     public int getISBN() {
         return ISBN;
     }
 
-    public void setISBN(int ISBN) {
-        this.ISBN = ISBN;
-    }
-
 
     public Status getStatus() {
         return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
     }
 
     @Override
@@ -58,6 +40,6 @@ public class Book {
     public enum Status{
         AVAILABLE,
         BORROWED // w zasadzie przez to ze uzywam bazy z mysql to nie potrzebuje klasy enum,
-        // wystarczyl by String status ="AVAILABLE"
+        // wystarczylby String status ="AVAILABLE"
     }
 }

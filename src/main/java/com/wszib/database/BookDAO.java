@@ -155,7 +155,7 @@ public class BookDAO {
                         rs.getString("title"),
                         rs.getString("author"),
                        Book.Status.valueOf(rs.getString("status")));
-                System.out.println(book.toString());
+                System.out.println(book);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

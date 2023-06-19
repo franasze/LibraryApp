@@ -6,40 +6,32 @@ import com.wszib.gui.GUI;
 import com.wszib.model.User;
 
 public class Core {
-    final BookDAO bookDB = BookDAO.getInstance();
-    final UserDAO userDB = UserDAO.getInstance();
-    final GUI gui = GUI.getInstance();
-    final Authenticator authenticator = Authenticator.getInstance();
-    static final Core instance = new Core();
+    private final BookDAO bookDB = BookDAO.getInstance();
+    private final UserDAO userDB = UserDAO.getInstance();
+    private final Authenticator authenticator = Authenticator.getInstance();
+    private static final Core instance = new Core();
     public void start(){
-
 
         boolean isRunning = false;
 
         while(true) {
             while (!isRunning) {
                 switch (GUI.showLogMenu()) {
-                    case "1":
-                        userDB.register(GUI.readLoginAndPasswordFirstTime());
-                        break;
-                    case "2":
-                        authenticator.authenticate(gui.readLoginAndPassword());
+                    case "1" -> userDB.register(GUI.readLoginAndPasswordFirstTime());
+                    case "2" -> {
+                        authenticator.authenticate(GUI.readLoginAndPassword());
                         isRunning = authenticator.loggedUser != null;
                         if (!isRunning)
                             System.out.println("Not authorized !");
-                        break;
-                    case "3":
-                        System.exit(0);
-                    default:
-                        System.out.println("Wrong choose !!");
-                        break;
+                    }
+                    case "3" -> System.exit(0);
+                    default -> System.out.println("Wrong choose !!");
                 }
             }
-
             while (isRunning) {
                 switch (GUI.showMenu()) {
                     case "1":
-                        this.gui.searchBook();
+                        GUI.searchBook();
                         break;
                         case "2":
                             GUI.showBooksList();
@@ -83,7 +75,6 @@ public class Core {
                                 .loggedUser.getRole().equals(User.Role.ADMIN))
                             GUI.showUsersList();
                         break;
-
                 }
             }
         }
