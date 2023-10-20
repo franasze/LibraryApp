@@ -4,23 +4,32 @@ import com.wszib.database.BookDAO;
 import com.wszib.database.UserDAO;
 import com.wszib.gui.GUI;
 import com.wszib.model.User;
+import org.apache.commons.codec.digest.DigestUtils;
 
 public class Core {
     private final BookDAO bookDB = BookDAO.getInstance();
     private final UserDAO userDB = UserDAO.getInstance();
+    final GUI gui = GUI.getInstance();
     private final Authenticator authenticator = Authenticator.getInstance();
     private static final Core instance = new Core();
-    public void start(){
+    private boolean registered = false;
 
+    public void start() {
         boolean isRunning = false;
-
-        while(true) {
+        while (true) {
             while (!isRunning) {
-                switch (GUI.showLogMenu()) {
-                    case "1" -> userDB.register(GUI.readLoginAndPasswordFirstTime());
+                switch (gui.showLogMenu()) {
+                    case "1" -> {
+                        User user = this.gui.readLoginAndPasswordFirstTime();
+                        userDB.register(user);
+
+                        if (userDB.findByLogin(user.getLogin()).isEmpty())
+                            registered = true;
+                        gui.showEffectRegistration(registered);
+                    }
                     case "2" -> {
-                        authenticator.authenticate(GUI.readLoginAndPassword());
-                        isRunning = authenticator.loggedUser != null;
+                        this.authenticator.authenticate(gui.readLoginAndPassword());
+                        isRunning = this.authenticator.getLoggedUser().isPresent();
                         if (!isRunning)
                             System.out.println("Not authorized !");
                     }
@@ -29,56 +38,51 @@ public class Core {
                 }
             }
             while (isRunning) {
-                switch (GUI.showMenu()) {
-                    case "1":
-                        GUI.searchBook();
-                        break;
-                        case "2":
-                            GUI.showBooksList();
-                            GUI.showBorrowEffect(bookDB.rentBook(GUI.readTitle(),this.authenticator.loggedUser));
-                            break;
-                    case "3":
-                        isRunning = false;
-                        break;
-                    case "4":
-                        if (authenticator.loggedUser != null && authenticator
-                                .loggedUser.getRole().equals(User.Role.ADMIN)) {
-                            GUI.showBooksList();
-                            bookDB.addBook(GUI.readNewBookData());
+                switch (gui.showMenu()) {
+                    case "1" -> gui.searchBook();
+                    case "2" -> {
+                        gui.showBooksList();
+                        gui.showBorrowEffect(bookDB.rentBook(gui.readTitle(), authenticator.getLoggedUser()));
+                    }
+                    case "3" -> isRunning = false;
+                    case "4" -> {
+                        if (authenticator.getLoggedUser().isPresent() && authenticator
+                                .getLoggedUser().get().getRole().equals(User.Role.ADMIN)) {
+                            gui.showBooksList();
+                            bookDB.addBook(gui.readNewBookData());
                         }
-                        break;
-                    case "5":
-                        if (authenticator.loggedUser != null && authenticator
-                                .loggedUser.getRole().equals(User.Role.ADMIN)) {
-                            GUI.showBooksList();
+                    }
+                    case "5" -> {
+                        if (authenticator.getLoggedUser().isPresent() && authenticator
+                                .getLoggedUser().get().getRole().equals(User.Role.ADMIN)) {
+                            gui.showBooksList();
                         }
-                        break;
-                    case "6":
-                        if (authenticator.loggedUser != null && authenticator
-                                .loggedUser.getRole().equals(User.Role.ADMIN)) {
-                           // GUI.showBorrowedBooksList();
-                            GUI.showBorrowedBooksList2();
+                    }
+                    case "6" -> {
+                        if (authenticator.getLoggedUser().isPresent() && authenticator
+                                .getLoggedUser().get().getRole().equals(User.Role.ADMIN)) {
+                            // GUI.showBorrowedBooksList();
+                            gui.showBorrowedBooksList2();
                         }
-                        break;
-                    case "7":
-                        if (authenticator.loggedUser != null && authenticator
-                                .loggedUser.getRole().equals(User.Role.ADMIN)) {
-                            GUI.showBorrowedBooksAfterTheDeadlineList2();
+                    }
+                    case "7" -> {
+                        if (authenticator.getLoggedUser().isPresent() && authenticator
+                                .getLoggedUser().get().getRole().equals(User.Role.ADMIN)) {
+                            gui.showBorrowedBooksAfterTheDeadlineList2();
 
                         }
-                        break;
-                    default:
-                        System.out.println("Wrong choose!");
-                        break;
-                    case "8":
-                        if (authenticator.loggedUser != null && authenticator
-                                .loggedUser.getRole().equals(User.Role.ADMIN))
-                            GUI.showUsersList();
-                        break;
+                    }
+                    default -> System.out.println("Wrong choose!");
+                    case "8" -> {
+                        if (authenticator.getLoggedUser().isPresent() && authenticator
+                                .getLoggedUser().get().getRole().equals(User.Role.ADMIN))
+                            gui.showUsersList();
+                    }
                 }
             }
         }
     }
+
     public static Core getInstance() {
         return instance;
     }

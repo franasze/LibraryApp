@@ -5,31 +5,35 @@ import com.wszib.database.BookDAO;
 import com.wszib.database.UserDAO;
 import com.wszib.model.Book;
 import com.wszib.model.User;
-import org.apache.commons.codec.digest.DigestUtils;
+//import org.apache.commons.codec.digest.DigestUtils;
 
 import java.util.Scanner;
 
 public class GUI {
+
+    private static final GUI instance = new GUI();
     private static final BookDAO bookDB = BookDAO.getInstance();
-    static final UserDAO userDB = UserDAO.getInstance();
+//    static final UserDAO userDB = UserDAO.getInstance();
     final static Authenticator authenticator = Authenticator.getInstance();
-    private static final Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner = new Scanner(System.in);
+
     private GUI() {
     }
-    public static String showLogMenu(){
+
+    public String showLogMenu() {
         System.out.println("1.Registration");
         System.out.println("2.Login");
         System.out.println("3. Exit");
         return scanner.nextLine();
     }
 
-    public static String showMenu(){
+    public String showMenu() {
         System.out.println("1. Search ");
         System.out.println("2. Borrow book");
         System.out.println("3. Logout");
 
-        if (authenticator.loggedUser != null &&
-                authenticator.loggedUser.getRole().equals(User.Role.ADMIN)) {
+        if (authenticator.getLoggedUser().isPresent() &&
+                authenticator.getLoggedUser().get().getRole().equals(User.Role.ADMIN)) {
             System.out.println("4. Add book");
             System.out.println("5. List all book");
             System.out.println("6. List borrowed books");
@@ -39,71 +43,68 @@ public class GUI {
         return scanner.nextLine();
     }
 
-    public static User readLoginAndPassword(){
+    public User readLoginAndPassword() {
         User user = new User();
         System.out.println("Login:");
         user.setLogin(scanner.nextLine());
         System.out.println("Password:");
-        user.setPassword(DigestUtils.md5Hex(scanner.nextLine() + authenticator.seed));
+        user.setPassword(scanner.nextLine());
         return user;
     }
-    public static User readLoginAndPasswordFirstTime() {
+
+    public User readLoginAndPasswordFirstTime() {
 
         User user = new User();
 
-        boolean registered = false;
+        System.out.println("Login:");
+        user.setLogin(this.scanner.nextLine());
+        System.out.println("Password:");
+        user.setPassword(this.scanner.nextLine());
 
-            System.out.println("Login:");
-            user.setLogin(scanner.nextLine());
-            System.out.println("Password:");
-            user.setPassword(DigestUtils.md5Hex(scanner.nextLine() + authenticator.seed));
-           // user.setPassword(scanner.nextLine());
-            System.out.println("First name:");
-            user.setFirstName(scanner.nextLine());
-            System.out.println("Last name:");
-            user.setLastName(scanner.nextLine());
-
-            if (!userDB.ifUserExist(user.getLogin()))
-                registered = true;
-            GUI.showEffectRegistration(registered);
-            return user;
+        System.out.println("First name:");
+        user.setFirstName(scanner.nextLine());
+        System.out.println("Last name:");
+        user.setLastName(scanner.nextLine());
+        return user;
     }
 
-    public static void searchBook(){
+    public void searchBook() {
         System.out.println("Search book");
         bookDB.listAvailableBooks(scanner.nextLine());
     }
 
 
-    public static void showEffectRegistration(boolean effect){
-        if(effect)
+    public void showEffectRegistration(boolean effect) {
+        if (effect)
             System.out.println("Registered successful");
         else
             System.out.println("login is taken, please try again");
     }
-    public static void showBooksList() {
+
+    public void showBooksList() {
         System.out.println("Title\t\t\t\t\t\t\t\tAuthor\t\t\t\t\t\t\t\tISBN\t\t  Borrowed");
         bookDB.getBooks().forEach(System.out::println);
         System.out.println("\n");
     }
 
 
-    public static void showBorrowedBooksList2() {
+    public void showBorrowedBooksList2() {
         bookDB.listBorrowedBooks();
     }
 
-    public static void showBorrowedBooksAfterTheDeadlineList2() {
+    public void showBorrowedBooksAfterTheDeadlineList2() {
         bookDB.listBorrowedBooksAfterTheDeadline();
     }
 
 
-    public static void showUsersList(){
+    public void showUsersList() {
         UserDAO userDB = UserDAO.getInstance();
         System.out.println("First name\t\t\t\t Last name\t\t\t Login\t\t\tPassword\t\t\t\t\t\t   Role");
-       // userDB.getUsers().stream().forEach(System.out::println);
+        // userDB.getUsers().stream().forEach(System.out::println);
         userDB.getUsers();
     }
-    public static void showBorrowEffect(boolean effect) {
+
+    public void showBorrowEffect(boolean effect) {
         if (effect) {
             System.out.println("The Book has been borrowed successfully\n");
         } else {
@@ -112,18 +113,24 @@ public class GUI {
     }
 
 
-    public static String readTitle(){
+    public String readTitle() {
         System.out.println("Enter title: ");
         return scanner.nextLine();
     }
 
-    public static Book readNewBookData() {
+    public Book readNewBookData() {
         System.out.println("Title:");
         String title = scanner.nextLine();
         System.out.println("Author:");
         String author = scanner.nextLine();
         System.out.println("ISBN: ");
         int ISBN = Integer.parseInt(scanner.nextLine());
-        return new Book(ISBN,author,title, Book.Status.AVAILABLE);
+        return new Book(ISBN, author, title,true);
+    }
+
+    public static GUI getInstance() {
+        return instance;
     }
 }
+
+

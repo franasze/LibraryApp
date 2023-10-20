@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 public class BookDAO {
@@ -20,7 +21,7 @@ public class BookDAO {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             this.connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/moje1",
+                    "jdbc:mysql://localhost:3306/libraryDB",
                     "root",
                     "");
         }catch (SQLException | ClassNotFoundException e){
@@ -38,7 +39,7 @@ public class BookDAO {
                 int ISBN = rs.getInt("ISBN");
                 String author = rs.getString("author");
                 String title = rs.getString("title");
-                Book.Status status = Book.Status.valueOf(rs.getString("status"));
+                boolean status = rs.getBoolean("status");
 
                 Book book = new Book(ISBN,author,title,status);
                         books.add(book);
@@ -50,8 +51,9 @@ public class BookDAO {
         return books;
     }
 
-    public boolean rentBook(String title, User user) {
+    public boolean rentBook(String title, Optional <User> user) {
         try {
+
             String sql = "SELECT * FROM tbooks WHERE title = ?";
             PreparedStatement ps = this.connection.prepareStatement(sql);
             ps.setString(1, title);
@@ -63,16 +65,16 @@ public class BookDAO {
             }
 
             int ISBN = rs.getInt("ISBN");
-            Book.Status status = Book.Status.valueOf(rs.getString("status"));
+            boolean status = rs.getBoolean("status");
 
-            if(!status.equals(Book.Status.AVAILABLE)){
+            if(!rs.getBoolean("status")){
                 return false;
             }
             String sql2 = "SELECT * FROM tuser WHERE login = ?";
 
             PreparedStatement ups = this.connection.prepareStatement(sql2);
 
-            ups.setString(1, user.getLogin());
+            ups.setString(1, user.get().getLogin());
 
             ResultSet urs = ups.executeQuery();
 
@@ -92,7 +94,7 @@ public class BookDAO {
 
             String updateSql = "UPDATE tbooks SET status = ? WHERE ISBN = ?";
             PreparedStatement updatePs = this.connection.prepareStatement(updateSql);
-            updatePs.setString(1, "BORROWED");
+            updatePs.setBoolean(1, false);
             updatePs.setInt(2,  ISBN);
             updatePs.executeUpdate();
             return true;
@@ -109,7 +111,7 @@ public class BookDAO {
             ps.setString(1, book.getAuthor());
             ps.setString(2, book.getTitle());
             ps.setInt(3, book.getISBN());
-            ps.setString(4, String.valueOf(book.getStatus()));
+            ps.setBoolean(4, book.getStatus());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -154,7 +156,7 @@ public class BookDAO {
                         rs.getInt("ISBN"),
                         rs.getString("title"),
                         rs.getString("author"),
-                       Book.Status.valueOf(rs.getString("status")));
+                        rs.getBoolean("status"));
                 System.out.println(book);
             }
         } catch (SQLException e) {
