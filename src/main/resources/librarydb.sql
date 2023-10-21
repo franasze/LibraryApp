@@ -40,7 +40,9 @@ CREATE TABLE `tbooks` (
 --
 
 INSERT INTO `tbooks` (`id`, `author`, `title`, `status`, `ISBN`) VALUES
-(2, 'Adam Mickiewicz', 'Pan Tadeusz', 0, 2);
+(1, 'Boleslaw Prus', 'Lalka', 1, 1),
+(2, 'Adam Mickiewicz', 'Pan Tadeusz', 1, 2),
+(3, 'Juliusz Slowacki', 'Kordian', 1, 3);
 
 -- --------------------------------------------------------
 
@@ -60,7 +62,6 @@ CREATE TABLE `tborrowed` (
 --
 
 INSERT INTO `tborrowed` (`id`, `login`, `isbn`, `return_date_of_book`) VALUES
-(23, 'admin', 2, '2023-11-03'),
 
 -- --------------------------------------------------------
 
@@ -83,7 +84,7 @@ CREATE TABLE `tuser` (
 
 INSERT INTO `tuser` (`id`, `login`, `password`, `role`, `first_name`, `last_name`) VALUES
 (1, 'admin', 'admin', 'ADMIN', 'Arek', 'Kera'),
-(37, 'z', 'z', 'USER', 'z', 'z'),
+(2, 'mike12', 'mike123', 'USER', 'Mike', 'Nowak');
 
 --
 -- Indexes for dumped tables

@@ -7,15 +7,13 @@ import com.wszib.model.Book;
 import com.wszib.model.User;
 import org.apache.commons.codec.digest.DigestUtils;
 
-
 import java.util.Scanner;
 
 public class GUI {
 
     private static final GUI instance = new GUI();
     private static final BookDAO bookDB = BookDAO.getInstance();
-    //    static final UserDAO userDB = UserDAO.getInstance();
-    final static Authenticator authenticator = Authenticator.getInstance();
+    private static final Authenticator authenticator = Authenticator.getInstance();
     private final Scanner scanner = new Scanner(System.in);
 
     private GUI() {
@@ -82,11 +80,10 @@ public class GUI {
     }
 
     public void showBooksList() {
-        System.out.println("Title\t\t\t\t\t\t\t\tAuthor\t\t\t\t\t\t\t\tISBN\t\t  Borrowed");
+        System.out.println("Title\t\t\t\t\t\t\t\tAuthor\t\t\t\t\t\t\t\tISBN\t\t  Status");
         bookDB.getBooks().forEach(System.out::println);
         System.out.println("\n");
     }
-
 
     public void showBorrowedBooksList2() {
         bookDB.listBorrowedBooks();
@@ -95,7 +92,6 @@ public class GUI {
     public void showBorrowedBooksAfterTheDeadlineList2() {
         bookDB.listBorrowedBooksAfterTheDeadline();
     }
-
 
     public void showUsersList() {
         UserDAO userDB = UserDAO.getInstance();
@@ -110,7 +106,6 @@ public class GUI {
             System.out.println("The Book doesn't exist or it is currently on loan \n");
         }
     }
-
 
     public String readTitle() {
         System.out.println("Enter title: ");
@@ -137,5 +132,3 @@ public class GUI {
         return instance;
     }
 }
-
-

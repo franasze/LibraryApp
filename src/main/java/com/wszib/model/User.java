@@ -2,10 +2,10 @@ package com.wszib.model;
 
 public class User {
 
-    private int id;
+//    private int id;
     private String login;
     private String password;
-    private Role role;
+    private final Role role;
     private String firstName;
     private String lastName;
 
@@ -21,13 +21,9 @@ public class User {
         this.role=Role.USER;
     }
 
-//    public int getId() {
-//        return id;
+//    public void setId(int id) {
+//        this.id = id;
 //    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getLogin() {
         return login;

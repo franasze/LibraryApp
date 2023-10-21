@@ -8,10 +8,10 @@ import com.wszib.gui.GUI;
 import com.wszib.model.User;
 
 public class Core {
-    private final BookDAO bookDB = BookDAO.getInstance();
-    private final UserDAO userDB = UserDAO.getInstance();
-    final GUI gui = GUI.getInstance();
-    private final Authenticator authenticator = Authenticator.getInstance();
+    private static final BookDAO bookDB = BookDAO.getInstance();
+    private static final UserDAO userDB = UserDAO.getInstance();
+    private static final GUI gui = GUI.getInstance();
+    private static final Authenticator authenticator = Authenticator.getInstance();
     private static final Core instance = new Core();
 
     public void start() {
@@ -23,7 +23,7 @@ public class Core {
                 switch (gui.showLogMenu()) {
                     case "1" -> {
                         registered = false;
-                        User user = this.gui.readLoginAndPasswordFirstTime();
+                        User user = gui.readLoginAndPasswordFirstTime();
                         if (userDB.findByLogin(user.getLogin()).isEmpty()) {
                             userDB.register(user);
                             registered = true;

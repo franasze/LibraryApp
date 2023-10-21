@@ -46,10 +46,6 @@ public class UserDAO {
         }
     }
 
-    public static UserDAO getInstance() {
-        return instance;
-    }
-
     public List<User> getUsers() { //sql -> java
         ArrayList<User> users = new ArrayList<>();
         try {
@@ -59,11 +55,11 @@ public class UserDAO {
             while (rs.next()) {
                 users.add(new User(
 //                        rs.getInt("id"),
-                        rs.getString("login"),
-                        rs.getString("password"),
-                        User.Role.valueOf(rs.getString("role")),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"))
+                                rs.getString("login"),
+                                rs.getString("password"),
+                                User.Role.valueOf(rs.getString("role")),
+                                rs.getString("first_name"),
+                                rs.getString("last_name"))
                 );
             }
         } catch (SQLException e) {
@@ -71,6 +67,7 @@ public class UserDAO {
         }
         return users;
     }
+
     public void register(User user) {
         try {
             String sql = "INSERT INTO tuser (login,password,role,first_name,last_name) VALUES (?,?,?,?,?)";
@@ -81,7 +78,6 @@ public class UserDAO {
             ps.setString(3, user.getRole().toString());
             ps.setString(4, user.getFirstName());
             ps.setString(5, user.getLastName());
-
             ps.executeUpdate();
 //            ResultSet rs = ps.getGeneratedKeys();
 //            if (rs.next())
@@ -89,5 +85,9 @@ public class UserDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static UserDAO getInstance() {
+        return instance;
     }
 }

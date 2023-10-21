@@ -1,10 +1,10 @@
 package com.wszib.model;
 
 public class Book {
-    String author;
-    String title;
-    int ISBN;
-    boolean status;
+    private final String author;
+    private final String title;
+    private final int ISBN;
+    private final boolean status;
 
     public Book(int ISBN, String author, String title, boolean status){
         this.ISBN = ISBN;
