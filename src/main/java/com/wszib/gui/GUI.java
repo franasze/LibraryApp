@@ -5,7 +5,8 @@ import com.wszib.database.BookDAO;
 import com.wszib.database.UserDAO;
 import com.wszib.model.Book;
 import com.wszib.model.User;
-//import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.digest.DigestUtils;
+
 
 import java.util.Scanner;
 
@@ -13,7 +14,7 @@ public class GUI {
 
     private static final GUI instance = new GUI();
     private static final BookDAO bookDB = BookDAO.getInstance();
-//    static final UserDAO userDB = UserDAO.getInstance();
+    //    static final UserDAO userDB = UserDAO.getInstance();
     final static Authenticator authenticator = Authenticator.getInstance();
     private final Scanner scanner = new Scanner(System.in);
 
@@ -48,7 +49,7 @@ public class GUI {
         System.out.println("Login:");
         user.setLogin(scanner.nextLine());
         System.out.println("Password:");
-        user.setPassword(scanner.nextLine());
+        user.setPassword(DigestUtils.md5Hex(scanner.nextLine() + authenticator.getSeed()));
         return user;
     }
 
@@ -60,7 +61,6 @@ public class GUI {
         user.setLogin(this.scanner.nextLine());
         System.out.println("Password:");
         user.setPassword(this.scanner.nextLine());
-
         System.out.println("First name:");
         user.setFirstName(scanner.nextLine());
         System.out.println("Last name:");
@@ -100,8 +100,7 @@ public class GUI {
     public void showUsersList() {
         UserDAO userDB = UserDAO.getInstance();
         System.out.println("First name\t\t\t\t Last name\t\t\t Login\t\t\tPassword\t\t\t\t\t\t   Role");
-        // userDB.getUsers().stream().forEach(System.out::println);
-        userDB.getUsers();
+        userDB.getUsers().forEach(System.out::println);
     }
 
     public void showBorrowEffect(boolean effect) {
@@ -119,13 +118,19 @@ public class GUI {
     }
 
     public Book readNewBookData() {
-        System.out.println("Title:");
-        String title = scanner.nextLine();
-        System.out.println("Author:");
-        String author = scanner.nextLine();
-        System.out.println("ISBN: ");
-        int ISBN = Integer.parseInt(scanner.nextLine());
-        return new Book(ISBN, author, title,true);
+        while (true) {
+            try {
+                System.out.println("Title:");
+                String title = scanner.nextLine();
+                System.out.println("Author:");
+                String author = scanner.nextLine();
+                System.out.println("ISBN: ");
+                int ISBN = Integer.parseInt(scanner.nextLine());
+                return new Book(ISBN, author, title, true);
+            } catch (NumberFormatException e) {
+                System.out.println("ISBN is the International Standard Book Number,\n try again with correct number");
+            }
+        }
     }
 
     public static GUI getInstance() {

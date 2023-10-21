@@ -17,14 +17,14 @@ public class BookDAO {
     private static final BookDAO instance = new BookDAO();
     private final Connection connection;
 
-    private BookDAO(){
+    private BookDAO() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             this.connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/libraryDB",
+                    "jdbc:mysql://localhost:3306/librarydb",
                     "root",
                     "");
-        }catch (SQLException | ClassNotFoundException e){
+        } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
@@ -35,14 +35,14 @@ public class BookDAO {
             String sql = "SELECT * FROM tbooks";
             PreparedStatement ps = this.connection.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
-            while(rs.next()) {
+            while (rs.next()) {
                 int ISBN = rs.getInt("ISBN");
                 String author = rs.getString("author");
                 String title = rs.getString("title");
                 boolean status = rs.getBoolean("status");
 
-                Book book = new Book(ISBN,author,title,status);
-                        books.add(book);
+                Book book = new Book(ISBN, author, title, status);
+                books.add(book);
 
             }
         } catch (SQLException e) {
@@ -51,7 +51,7 @@ public class BookDAO {
         return books;
     }
 
-    public boolean rentBook(String title, Optional <User> user) {
+    public boolean rentBook(String title, Optional<User> user) {
         try {
 
             String sql = "SELECT * FROM tbooks WHERE title = ?";
@@ -67,7 +67,7 @@ public class BookDAO {
             int ISBN = rs.getInt("ISBN");
             boolean status = rs.getBoolean("status");
 
-            if(!rs.getBoolean("status")){
+            if (!rs.getBoolean("status")) {
                 return false;
             }
             String sql2 = "SELECT * FROM tuser WHERE login = ?";
@@ -95,7 +95,7 @@ public class BookDAO {
             String updateSql = "UPDATE tbooks SET status = ? WHERE ISBN = ?";
             PreparedStatement updatePs = this.connection.prepareStatement(updateSql);
             updatePs.setBoolean(1, false);
-            updatePs.setInt(2,  ISBN);
+            updatePs.setInt(2, ISBN);
             updatePs.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -113,13 +113,14 @@ public class BookDAO {
             ps.setInt(3, book.getISBN());
             ps.setBoolean(4, book.getStatus());
             ps.executeUpdate();
-        } catch (SQLException e) {
+        } catch (SQLException | NumberFormatException e) {
             throw new RuntimeException(e);
         }
     }
+
     public void listBorrowedBooks() {
         try {
-            String query = "SELECT tbooks.title,tbooks.author,tbooks.ISBN,tuser.first_name,tuser.last_name,tborrowed.return_date_of_book "+
+            String query = "SELECT tbooks.title,tbooks.author,tbooks.ISBN,tuser.first_name,tuser.last_name,tborrowed.return_date_of_book " +
                     "FROM tbooks JOIN tborrowed ON tbooks.ISBN = tborrowed.ISBN " +
                     "JOIN tuser ON tuser.login = tborrowed.login WHERE tborrowed.return_date_of_book >= ?";
             PreparedStatement statement = this.connection.prepareStatement(query);
@@ -143,7 +144,7 @@ public class BookDAO {
 
     public void listAvailableBooks(String varchar) {
         try {
-            String variable = "%"+ varchar.toLowerCase() +"%";
+            String variable = "%" + varchar.toLowerCase() + "%";
             String sql = "SELECT * FROM tbooks WHERE (LOWER(title) LIKE ? OR LOWER(author) LIKE ? OR LOWER(ISBN) LIKE ?)";
             PreparedStatement ps = this.connection.prepareStatement(sql);
             ps.setString(1, variable);
@@ -166,8 +167,8 @@ public class BookDAO {
 
     public void listBorrowedBooksAfterTheDeadline() {
         try {
-            String query = "SELECT tbooks.title,tbooks.author,tbooks.ISBN,tuser.first_name,tuser.last_name,tborrowed.return_date_of_book "+
-                    "FROM tbooks JOIN tborrowed ON tbooks.ISBN = tborrowed.ISBN "+
+            String query = "SELECT tbooks.title,tbooks.author,tbooks.ISBN,tuser.first_name,tuser.last_name,tborrowed.return_date_of_book " +
+                    "FROM tbooks JOIN tborrowed ON tbooks.ISBN = tborrowed.ISBN " +
                     "JOIN tuser ON tuser.login = tborrowed.login WHERE tborrowed.return_date_of_book < ?";
             PreparedStatement statement = this.connection.prepareStatement(query);
             statement.setDate(1, java.sql.Date.valueOf(LocalDate.now()));
@@ -186,7 +187,8 @@ public class BookDAO {
             throw new RuntimeException(e);
         }
     }
-    public static BookDAO getInstance(){
+
+    public static BookDAO getInstance() {
         return instance;
     }
 

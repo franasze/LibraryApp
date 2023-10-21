@@ -2,9 +2,10 @@ package com.wszib.core;
 
 import com.wszib.database.BookDAO;
 import com.wszib.database.UserDAO;
+import com.wszib.exceptions.IncorrectPasswordException;
+import com.wszib.exceptions.UserNotFoundException;
 import com.wszib.gui.GUI;
 import com.wszib.model.User;
-import org.apache.commons.codec.digest.DigestUtils;
 
 public class Core {
     private final BookDAO bookDB = BookDAO.getInstance();
@@ -12,26 +13,30 @@ public class Core {
     final GUI gui = GUI.getInstance();
     private final Authenticator authenticator = Authenticator.getInstance();
     private static final Core instance = new Core();
-    private boolean registered = false;
 
     public void start() {
+        boolean registered;
         boolean isRunning = false;
+
         while (true) {
             while (!isRunning) {
                 switch (gui.showLogMenu()) {
                     case "1" -> {
+                        registered = false;
                         User user = this.gui.readLoginAndPasswordFirstTime();
-                        userDB.register(user);
-
-                        if (userDB.findByLogin(user.getLogin()).isEmpty())
+                        if (userDB.findByLogin(user.getLogin()).isEmpty()) {
+                            userDB.register(user);
                             registered = true;
+                        }
                         gui.showEffectRegistration(registered);
                     }
                     case "2" -> {
-                        this.authenticator.authenticate(gui.readLoginAndPassword());
-                        isRunning = this.authenticator.getLoggedUser().isPresent();
-                        if (!isRunning)
-                            System.out.println("Not authorized !");
+                        try {
+                            authenticator.authenticate(gui.readLoginAndPassword());
+                            isRunning = authenticator.getLoggedUser().isPresent();
+                        } catch (UserNotFoundException | IncorrectPasswordException e) {
+                            System.out.println("Incorrect authentication");
+                        }
                     }
                     case "3" -> System.exit(0);
                     default -> System.out.println("Wrong choose !!");
@@ -77,6 +82,7 @@ public class Core {
                         if (authenticator.getLoggedUser().isPresent() && authenticator
                                 .getLoggedUser().get().getRole().equals(User.Role.ADMIN))
                             gui.showUsersList();
+                        System.out.println("\n");
                     }
                 }
             }

@@ -35,15 +35,15 @@ public class BookDAOTest {
        Assertions.assertTrue(flag);
     }
 
-//    @Test
-//    public void testSuccessfullyRentBook() {
-//
-//        BookDAO bookDAO = BookDAO.getInstance();
-//        Book book = new Book(101, "Andrzej Sapkowski", "Miecz Przeznaczenia", true);
-//        Optional<User> user = Optional.of(new User("admin","admin", User.Role.ADMIN,"Arek","Kera"));
-//        boolean borrowedBook = bookDAO.rentBook(book.getTitle(), user);
-//        Assertions.assertTrue(borrowedBook);
-//    }
+    @Test
+    public void testSuccessfullyRentBook() {
+
+        BookDAO bookDAO = BookDAO.getInstance();
+        Book book = new Book(101, "Andrzej Sapkowski", "Miecz Przeznaczenia", true);
+        Optional<User> user = Optional.of(new User("admin","admin", User.Role.ADMIN,"Arek","Kera"));
+        boolean borrowedBook = bookDAO.rentBook(book.getTitle(), user);
+        Assertions.assertTrue(borrowedBook);
+    }
 
     @Test
     public void testFailedRentBook() {
